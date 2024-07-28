@@ -39,6 +39,15 @@ const MainLayout: React.FC = () => {
           >
             React Formik
           </Button>
+          <Button
+            component={Link}
+            to="/formik-context"
+            variant="contained"
+            color="success"
+            sx={{ mx: 1 }}
+          >
+            Formik context
+          </Button>
         </Box>
         <Outlet />
       </Container>
