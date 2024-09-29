@@ -48,6 +48,42 @@ const MainLayout: React.FC = () => {
           >
             Formik context
           </Button>
+          <Button
+            component={Link}
+            to="/age-option"
+            variant="contained"
+            color="success"
+            sx={{ mx: 1 }}
+          >
+            Age option Formik
+          </Button>
+          <Button
+            component={Link}
+            to="/use-memo"
+            variant="contained"
+            color="success"
+            sx={{ mx: 1 }}
+          >
+            Use Memo
+          </Button>
+          <Button
+            component={Link}
+            to="/use-callback"
+            variant="contained"
+            color="success"
+            sx={{ mx: 1 }}
+          >
+            Use CallBack
+          </Button>
+           <Button
+            component={Link}
+            to="/form-antd"
+            variant="contained"
+            color="success"
+            sx={{ mx: 1 }}
+          >
+            Form Antd
+          </Button>
         </Box>
         <Outlet />
       </Container>
