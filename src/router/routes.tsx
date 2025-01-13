@@ -7,6 +7,7 @@ import UseMemo from "../pages/UseMemo";
 import UseCallBack from "../pages/UseCallback";
 import AgeSelector from "../pages/RandomAge";
 import FormAntd from "../pages/FormAntd";
+import ReactHookFormAntd from "../pages/ReactHookFormAntd";
 
 export const router = createBrowserRouter([
 	{
@@ -40,7 +41,13 @@ export const router = createBrowserRouter([
       {
         path: 'form-antd',
         element: <FormAntd></FormAntd>
+      },
+      {
+        path: 'react-hook-form-antd',
+        element: <ReactHookFormAntd></ReactHookFormAntd>
       }
+
+      
     ]
 	},
 ]);

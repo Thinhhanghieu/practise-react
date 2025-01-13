@@ -4,7 +4,11 @@ interface ExpensiveComponentProps {
   number: number;
 }
 
-const ExpensiveComponent: React.FC<ExpensiveComponentProps> = ({ number }) => {
+const ExpensiveComponent: React.FC<ExpensiveComponentProps> = React.memo(({ number }) => {
+
+  console.log("render");
+  
+  const [count, setCount] = useState(1)
   // Hàm tính toán đắt đỏ
   const computeExpensiveValue = (num: number): number => {
     console.log('Calculating...');
@@ -18,8 +22,10 @@ const ExpensiveComponent: React.FC<ExpensiveComponentProps> = ({ number }) => {
   // Sử dụng useMemo để ghi nhớ giá trị tính toán
   const expensiveValue = useMemo(() => computeExpensiveValue(number), [number]);
 
-  return <div>Expensive Value: {expensiveValue}</div>;
-};
+  return <div>Expensive Value: {expensiveValue}
+  <button onClick={() => setCount(count +1)} >   Incresase</button>
+  </div>;
+});
 
 const UseMemo: React.FC = () => {
   const [count, setCount] = useState<number>(0);
