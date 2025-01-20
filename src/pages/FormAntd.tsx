@@ -1,68 +1,98 @@
-import React, { useState } from "react";
-import { Form, Input, Button, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { AutoComplete, Input, Typography } from "antd";
+import { useDebounce } from "../hooks/usedebound";
 
-const FormAntd: React.FC = () => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+const { Text } = Typography;
 
-  const onFinish = async (values: any) => {
-    setLoading(true);
-    try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Simulating API error
-      if (values.username === "error") {
-        throw new Error("Invalid username or password");
-      }
-      
-      console.log("Login successful:", values);
-      message.success("Login successful");
-    } catch (error: any) {
-      console.error("Login failed:", error);
-      form.setFields([
-        {
-          name: 'username',
-          errors: [error.message || "Login failed"],
-        },
-        {
-          name: 'password',
-          errors: [error.message || "Login failed"],
-        },
-      ]);
-    } finally {
-      setLoading(false);
+// Giả lập API call
+const fetchOptions = async (query: string) => {
+  // Giả sử API trả về kết quả dựa trên query
+  if (query) {
+    return {
+      borrower: [
+        { label: `Borrower: ${query} 1`, value: `borrower-${query}1` },
+        { label: `Borrower: ${query} 2`, value: `borrower-${query}2` },
+        { label: `Borrower: ${query} 3`, value: `borrower-${query}3` },
+      ],
+      loan: [
+        { label: `Loan: ${query} A`, value: `loan-${query}A` },
+        { label: `Loan: ${query} B`, value: `loan-${query}B` },
+        { label: `Loan: ${query} C`, value: `loan-${query}C` },
+      ],
+    };
+  }
+  return { borrower: [], loan: [] };
+};
+
+const AutoCompleteExample: React.FC = () => {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [options, setOptions] = useState<{ label: string; options: any[] }[]>([]);
+
+  // Debounce giá trị input
+  const debouncedValue = useDebounce(inputValue, 500);
+
+  // Khi debouncedValue thay đổi, gọi API để tìm kiếm dữ liệu
+  useEffect(() => {
+    if (debouncedValue) {
+      fetchOptions(debouncedValue).then((data) => {
+        const borrowerOptions = data.borrower;
+        const loanOptions = data.loan;
+
+        // Phân loại option thành 2 nhóm Borrower và Loan
+        setOptions([
+          {
+            label: "Borrower",
+            options: borrowerOptions,
+          },
+          {
+            label: "Loan",
+            options: loanOptions,
+          },
+        ]);
+      });
+    } else {
+      setOptions([]); // Nếu không có input, reset options
     }
+  }, [debouncedValue]);
+
+  // Tạo hàm highlight từ khóa trong label
+  const highlightText = (text: string, searchTerm: string) => {
+    if (!searchTerm) return text; // Nếu không có từ khóa tìm kiếm thì trả về văn bản gốc
+    const parts = text.split(new RegExp(`(${searchTerm})`, "gi")); // Tách văn bản tại từ khóa
+    return parts.map((part, index) =>
+      part.toLowerCase() === searchTerm.toLowerCase() ? (
+        <span key={index} style={{ backgroundColor: "yellow" }}>
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
-    <Form
-      form={form}
-      name="login"
-      onFinish={onFinish}
-      initialValues={{ remember: true }}
-      style={{ maxWidth: 300, margin: "0 auto" }}
-    >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: "Please input your Username!" }]}
+    <div>
+      <AutoComplete
+        value={inputValue}
+        onChange={(value) => setInputValue(value)} // Cập nhật input value
+        style={{ width: 300 }}
+        options={options.flatMap((group) => [
+          {
+            label: <Text strong>{group.label}</Text>, // Tạo tiêu đề cho nhóm
+            disabled: true, // Tắt tương tác với tiêu đề nhóm
+          },
+          ...group.options.map((option) => ({
+            label: highlightText(option.label, debouncedValue), // Highlight từ khóa trong từng option
+            value: option.value,
+          })),
+        ])}
+        onSelect={(value,option)=> console.log(option)
+        }
       >
-        <Input suffix={<UserOutlined />} placeholder="Username" />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: "Please input your Password!" }]}
-      >
-        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading} style={{ width: "100%" }}>
-          Log in
-        </Button>
-      </Form.Item>
-    </Form>
+        <Input.Search placeholder="Search..." enterButton />
+      </AutoComplete>
+    </div>
   );
 };
 
-export default FormAntd;
+export default AutoCompleteExample;
